@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:kopi_verse/screen/auth/login.dart';
+import 'package:kopi_verse/screen/auth/screens/login.dart';
 import 'package:kopi_verse/screen/splash/button.dart';
 import 'package:kopi_verse/service/config.dart';
 
@@ -23,17 +23,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<bool> _checkAPI() async {
     try {
-      // Make an API call to the server
       final response = await http.get(Uri.parse(Config.baseUrl));
 
       if (!mounted) return false;
-
-      // If the API call is successful
       if (response.statusCode == 200) return true;
 
       return false;
     } catch (e) {
-      // If the API call fails
       if (!mounted) return false;
 
       return false;
@@ -122,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         });
 
                         return const Text(
-                            'Gagal nyambung ke server.\nCoba lagi nanti ya.',
+                          'Gagal nyambung ke server.\nCoba lagi nanti ya.',
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         );
