@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/screen/auth/screens/login.dart';
+import 'package:kopi_verse/screen/auth/login.dart';
 import 'package:kopi_verse/service/auth.dart';
 import 'package:kopi_verse/service/storage.dart';
 
@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<String?> _loadUserRole() async {
     try {
-      return await Storage.take('user_role');
+      return await Storage.take('auth_role');
     } catch (e) {
       return null;
     }
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if (response.statusCode == 202) {
                         await Storage.drop('auth_token');
-                        await Storage.drop('user_role');
+                        await Storage.drop('auth_role');
 
                         Navigator.pushReplacement(
                           context,

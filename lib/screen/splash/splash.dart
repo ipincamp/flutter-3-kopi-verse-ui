@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:kopi_verse/screen/auth/screens/login.dart';
+import 'package:kopi_verse/screen/auth/login.dart';
 import 'package:kopi_verse/screen/splash/button.dart';
 import 'package:kopi_verse/service/config.dart';
 
@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Kurang atau Lebih,\nSetiap Rezeki\nPerlu Dirayakan",
+                    "Celebrate\nEvery Blessing",
                     style: GoogleFonts.sora(
                       fontSize: 34,
                       fontWeight: FontWeight.w600,
@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     height: size.height * 0.010,
                   ),
                   Text(
-                    "Dengan Secangkir Kopi",
+                    "With a Cup of Coffee",
                     style: GoogleFonts.sora(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -101,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           height: 62,
                           width: size.width * 0.80,
                           child: SplashButton(
-                            title: 'Gaskeun!',
+                            title: 'Get Started',
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
