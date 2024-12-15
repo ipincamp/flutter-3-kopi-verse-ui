@@ -19,9 +19,10 @@ class TextUtil extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-          color: color ?? Colors.white,
-          fontSize: size ?? 16,
-          fontWeight: weight == null ? FontWeight.w600 : FontWeight.w700),
+        color: color ?? Colors.white,
+        fontSize: size ?? 16,
+        fontWeight: weight == null ? FontWeight.w600 : FontWeight.w700,
+      ),
     );
   }
 }
