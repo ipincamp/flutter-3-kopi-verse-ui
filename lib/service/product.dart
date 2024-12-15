@@ -2,15 +2,25 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/model/product.dart';
 import 'package:kopi_verse/service/config.dart';
 import 'package:kopi_verse/service/storage.dart';
 
+import '../model/product.dart';
+import '../model/product_detail.dart';
+
 class ProductService with ChangeNotifier {
   List<Product> _productList = [];
+  ProductDetail _productDetail = ProductDetail(
+    id: '',
+    name: '',
+    detail: '',
+    price: 0,
+    image: '',
+  );
   bool _isLoading = false;
 
   List<Product> get productList => _productList;
+  ProductDetail get productDetail => _productDetail;
   bool get isLoading => _isLoading;
 
   // get all products
@@ -45,7 +55,37 @@ class ProductService with ChangeNotifier {
         debugPrint('Failed to fetch data: ${response.statusCode}');
       }
     } catch (error) {
-      debugPrint('Error fetching barang: $error');
+      debugPrint('Error fetching product: $error');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // get product by id
+  Future<void> getProductById(String id) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final token = await Storage.take('auth_token');
+      final response = await http.get(
+        Uri.parse('${Config.productUrl}/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        _productDetail = ProductDetail.fromJson(responseData['data']);
+      } else {
+        debugPrint('Failed to fetch data: ${response.statusCode}');
+      }
+    } catch (error) {
+      debugPrint('Error fetching product: $error');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -62,7 +102,8 @@ class ProductService with ChangeNotifier {
       return;
     }
 
-    _productList = _productList.where((product) => product.category == category).toList();
+    _productList =
+        _productList.where((product) => product.category == category).toList();
     _isLoading = false;
     notifyListeners();
   }
@@ -71,4 +112,3 @@ class ProductService with ChangeNotifier {
 
   // update product
 }
-

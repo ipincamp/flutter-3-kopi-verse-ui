@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kopi_verse/service/product.dart';
 import 'package:provider/provider.dart';
 
+import 'product_detail.dart';
+
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
 
@@ -109,16 +111,24 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   : GridView.builder(
                       itemCount: productService.productList.length,
                       itemBuilder: (context, index) {
-                        final barang = productService.productList[index];
+                        final product = productService.productList[index];
                         return GestureDetector(
                           onTap: () {
-                            // _showEditBarangDialog(context, barang);
+                            // product detail
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailScreen(
+                                  productId: product.id,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.all(4.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12.0),
-                              image: barang.image != 'no-image.jpg'
+                              image: product.image != 'no-image.jpg'
                                 ? DecorationImage(
                                     image: AssetImage('assets/images/p1.png'),
                                     fit: BoxFit.cover,
@@ -134,7 +144,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 )
                                 */
                                 : null,
-                              color: barang.image == 'no-image.jpg' ? Colors.grey : null,
+                              color: product.image == 'no-image.jpg' ? Colors.grey : null,
                             ),
                             child: Stack(
                               children: [
@@ -145,7 +155,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                     color: Colors.black54,
                                     padding: const EdgeInsets.all(4.0),
                                     child: Text(
-                                      'Rp. ${barang.price}',
+                                      'Rp. ${product.price}',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.yellowAccent,
@@ -162,7 +172,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                     color: Colors.black54,
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      barang.name,
+                                      product.name,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
