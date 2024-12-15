@@ -92,6 +92,29 @@ class ProductService with ChangeNotifier {
     }
   }
 
+  // add product to cart by id
+  Future<bool> addToCart(String id, int quantity) async {
+    try {
+      final token = await Storage.take('auth_token');
+      final response = await http.post(
+        Uri.parse(Config.cartUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'product_id': id,
+          'quantity': quantity,
+        }),
+      );
+
+      return response.statusCode == 201 ? true : false;
+    } catch (error) {
+      debugPrint('Error adding product to cart: $error');
+      return false;
+    }
+  }
+
   // filter by category
   void filterByCategory(String category) async {
     await getProducts();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kopi_verse/screen/customer/cart.dart';
 import 'package:provider/provider.dart';
 
 import '../../service/product.dart';
@@ -26,6 +28,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
+  int quantity = 1;
+
   @override
   Widget build(BuildContext context) {
     final productService = Provider.of<ProductService>(context);
@@ -33,6 +37,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Detail'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(),
+                  )).then((_) {
+                setState(() {});
+              });
+            },
+          ),
+        ],
       ),
       body: Container(
         child: productService.isLoading
@@ -96,24 +114,74 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Rp ${product.price}',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.remove),
+                                    onPressed: quantity > 1
+                                        ? () {
+                                            setState(() {
+                                              quantity--;
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                  SizedBox(
+                                    width: 50,
+                                    child: TextField(
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      controller: TextEditingController(
+                                        text: '$quantity',
+                                      ),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          quantity = int.tryParse(value)!;
+                                        });
+                                      },
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: () {
+                                      setState(() {
+                                        quantity++;
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                              /*
+                              // add to cart
                               ElevatedButton(
-                                onPressed: () {
-                                  // aksi tambah ke keranjang
-                                },
-                                child: Text('Add to Cart'),
-                              ),
-                              */
-                              ElevatedButton(
-                                onPressed: () {
-                                  //
+                                onPressed: () async {
+                                  final result = await productService.addToCart(
+                                    product.id,
+                                    quantity,
+                                  );
+                                  if (result) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Product added to cart successfully!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Failed to add product to cart.'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
