@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.3.3
   google_fonts: ^6.2.1
   flutter_svg: ^2.0.16
+  curved_navigation_bar: ^1.0.6
 
 dev_dependencies:
   flutter_test:
@@ -68,7 +69,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
-    - assets/vectors/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

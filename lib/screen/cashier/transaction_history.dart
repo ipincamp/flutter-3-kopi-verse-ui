@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
-class TransactionHistory extends StatefulWidget {
-  const TransactionHistory({super.key});
+class TransactionHistoryScreen extends StatefulWidget {
+  const TransactionHistoryScreen({super.key});
 
   @override
-  State<TransactionHistory> createState() => _TransactionHistoryState();
+  State<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
 }
 
-class _TransactionHistoryState extends State<TransactionHistory> {
+class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      body: const Center(
         child: Text('Transaction History'),
       ),
     );

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class Transaction extends StatefulWidget {
-  const Transaction({super.key});
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
 
   @override
-  State<Transaction> createState() => _TransactionState();
+  State<TransactionScreen> createState() => _TransactionScreenState();
 }
 
-class _TransactionState extends State<Transaction> {
+class _TransactionScreenState extends State<TransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('Transaction'),
+        child: Text('Transaction Screen'),
       ),
     );
   }
