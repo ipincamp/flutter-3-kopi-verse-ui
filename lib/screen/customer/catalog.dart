@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kopi_verse/service/product.dart';
 import 'package:provider/provider.dart';
 
-import 'product_detail.dart';
+import './product_detail.dart';
+import '../../service/product.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});

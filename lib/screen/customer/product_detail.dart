@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kopi_verse/screen/customer/cart.dart';
 import 'package:provider/provider.dart';
 
+import '../../screen/customer/cart.dart';
 import '../../service/product.dart';
 
 class ProductDetailScreen extends StatefulWidget {

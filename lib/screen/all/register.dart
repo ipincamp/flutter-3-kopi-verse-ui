@@ -22,7 +22,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   // handle register
   void _handleRegister(BuildContext context) async {
@@ -60,34 +61,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password,
         confirmPassword,
       );
+      final responseJson = jsonDecode(response.body);
 
-      // register failed
-      if (response.statusCode != 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Register failed!'),
+      if (response.statusCode == 201) {
+        final String authToken = responseJson['data']['token'];
+        final String authRole = 'customer';
+
+        await Storage.save('auth_token', authToken);
+        await Storage.save('auth_role', authRole);
+
+        // navigate to home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(role: authRole),
           ),
         );
-        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseJson['errors']),
+          ),
+        );
       }
-
-      final json = jsonDecode(response.body);
-      final String token = json['data']['token'];
-      final String role = 'customer';
-
-      // save token
-      await Storage.save('auth_token', token);
-      await Storage.save('auth_role', role);
-
-      // navigate to home
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(role: role),
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Register failed!"),
         ),
       );
-    } catch (e) {
-      print(e);
     }
   }
 

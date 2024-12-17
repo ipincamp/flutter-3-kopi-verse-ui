@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/service/auth.dart';
-import 'package:kopi_verse/service/storage.dart';
 
 import './home.dart';
-import 'register.dart';
+import './register.dart';
 import '../../common/show_up_animation.dart';
 import '../../common/text_util.dart';
+import '../../service/auth.dart';
 import '../../service/config.dart';
+import '../../service/storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,32 +58,35 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // connect with api
     try {
-      final response = await AuthService.login(email, password);
+      final response = await AuthService.login(
+        email,
+        password,
+      );
       if (!mounted) return;
+      final responseJson = jsonDecode(response.body);
 
-      if (response.statusCode != 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login failed"),
+      if (response.statusCode == 200) {
+        final String token = responseJson['data']['token'];
+        final String role = responseJson['data']['role'];
+
+        await Storage.save('auth_token', token);
+        await Storage.save('auth_role', role);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(role: role),
           ),
         );
-        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseJson['errors']),
+          ),
+        );
       }
-
-      final json = jsonDecode(response.body);
-      final String token = json['data']['token'];
-      final String role = json['data']['role'];
-
-      await Storage.save('auth_token', token);
-      await Storage.save('auth_role', role);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(role: role),
-        ),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

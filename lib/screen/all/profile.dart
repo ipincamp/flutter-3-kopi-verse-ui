@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'login.dart';
+import './login.dart';
 import '../../service/auth.dart';
-import '../../service/storage.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String role;
@@ -58,9 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     final responseJson = jsonDecode(response.body);
 
                     if (response.statusCode == 202) {
-                      await Storage.drop('auth_token');
-                      await Storage.drop('auth_role');
-
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

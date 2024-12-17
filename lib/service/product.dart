@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/service/config.dart';
-import 'package:kopi_verse/service/storage.dart';
 
 import '../model/product.dart';
 import '../model/product_detail.dart';
+import '../service/config.dart';
+import '../service/storage.dart';
 
 class ProductService with ChangeNotifier {
   List<Product> _productList = [];

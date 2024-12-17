@@ -11,4 +11,11 @@ class Config {
     "assets/images/bg4.jpeg",
     "assets/images/bg5.jpeg",
   ];
+
+  static Map<String, String> headers({String? token}) {
+    return {
+      'Content-Type': 'application/json; charset=UTF-8',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 }
