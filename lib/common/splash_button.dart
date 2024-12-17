@@ -30,7 +30,7 @@ class _SplashButtonState extends State<SplashButton> {
         ),
       ),
       child: Text(
-        widget.title.toString(),
+        widget.title,
         style: GoogleFonts.sora(
           fontSize: 16,
           fontWeight: FontWeight.w600,

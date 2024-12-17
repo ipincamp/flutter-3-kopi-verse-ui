@@ -1,37 +1,33 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:kopi_verse/screen/auth/login.dart';
-import 'package:kopi_verse/screen/splash/button.dart';
-import 'package:kopi_verse/service/config.dart';
+
+import 'login.dart';
+import '../../service/config.dart';
+import '../../common/splash_button.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAPI();
+    _serverCheck();
   }
 
-  Future<bool> _checkAPI() async {
+  Future<bool> _serverCheck() async {
     try {
       final response = await http.get(Uri.parse(Config.baseUrl));
-
       if (!mounted) return false;
       if (response.statusCode == 200) return true;
-
-      return false;
+      return true;
     } catch (e) {
       if (!mounted) return false;
-
       return false;
     }
   }
@@ -39,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SizedBox(
@@ -88,11 +85,12 @@ class _SplashScreenState extends State<SplashScreen> {
                     height: size.height * 0.030,
                   ),
                   FutureBuilder<bool>(
-                    future: _checkAPI(),
+                    future: _serverCheck(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         );
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
@@ -118,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         });
 
                         return const Text(
-                          'Gagal nyambung ke server.\nCoba lagi nanti ya.',
+                          'Failed to connect to the server.\nPlease try again later.',
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         );

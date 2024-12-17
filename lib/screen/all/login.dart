@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/screen/auth/register.dart';
-import 'package:kopi_verse/screen/home.dart';
 import 'package:kopi_verse/service/auth.dart';
 import 'package:kopi_verse/service/storage.dart';
 
-import './data/bg_data.dart';
-import './utils/animations.dart';
-import './utils/text_utils.dart';
+import './home.dart';
+import 'register.dart';
+import '../../common/show_up_animation.dart';
+import '../../common/text_util.dart';
+import '../../service/config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,64 +25,70 @@ class _LoginScreenState extends State<LoginScreen> {
   int selectedIndex = 0;
   bool showOption = false;
 
+  // background change every 15 second
   @override
   void initState() {
     super.initState();
-    _startBackgroundChange();
-  }
-
-  void _startBackgroundChange() {
-    Future.delayed(const Duration(seconds: 10), () {
-      if (mounted) {
+    Future.delayed(const Duration(seconds: 15), () {
+      if (!mounted) return;
+      if (selectedIndex < Config.bgList.length - 1) {
         setState(() {
-          selectedIndex = (selectedIndex + 1) % bgList.length;
+          selectedIndex++;
         });
-        _startBackgroundChange();
+      } else {
+        setState(() {
+          selectedIndex = 0;
+        });
       }
     });
   }
 
-  void _handleLogin(BuildContext context) async {
-    String email = _emailController.text;
-    String password = _passwordController.text;
+  // fungsi handle login
+  Future<void> _handleLogin(BuildContext context) async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-    // attempt to login with AuthService
-    final response = await AuthService.login(email, password);
-    final json = jsonDecode(response.body);
+    if (!mounted) return;
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email and password can't be empty"),
+        ),
+      );
+      return;
+    }
 
-    if (response.statusCode == 200) {
-      // login successful
-      await Storage.save('auth_token', json['data']['token']);
-      await Storage.save('auth_role', json['data']['role']);
+    try {
+      final response = await AuthService.login(email, password);
+      if (!mounted) return;
+
+      if (response.statusCode != 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login failed"),
+          ),
+        );
+        return;
+      }
+
+      final json = jsonDecode(response.body);
+      final String token = json['data']['token'];
+      final String role = json['data']['role'];
+
+      await Storage.save('auth_token', token);
+      await Storage.save('auth_role', role);
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => HomeScreen(role: role),
         ),
       );
-    } else {
-      // login failed
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Icon(
-              Icons.error,
-              color: Colors.red,
-              size: 40,
-            ),
-            content: Text(json['errors']),
-            actions: [
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login failed"),
+        ),
       );
     }
   }
@@ -102,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       delay: 100,
                       child: ListView.builder(
                           shrinkWrap: true,
-                          itemCount: bgList.length,
+                          itemCount: Config.bgList.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index) {
                             return GestureDetector(
@@ -121,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: CircleAvatar(
                                     radius: 30,
                                     backgroundImage: AssetImage(
-                                      bgList[index],
+                                      Config.bgList[index],
                                     ),
                                   ),
                                 ),
@@ -159,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: CircleAvatar(
                           radius: 30,
                           backgroundImage: AssetImage(
-                            bgList[selectedIndex],
+                            Config.bgList[selectedIndex],
                           ),
                         ),
                       ),
@@ -173,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(bgList[selectedIndex]),
+            image: AssetImage(Config.bgList[selectedIndex]),
             fit: BoxFit.fill,
           ),
         ),
@@ -204,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         size: 30,
                       )),
                       const Spacer(),
-                      // email input
+                      /** Email */
                       TextUtil(
                         text: "Email",
                       ),
@@ -231,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // password input
+                      /** Password */
                       TextUtil(
                         text: "Password",
                       ),
@@ -259,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // login button
+                      /** Action Button */
                       ElevatedButton(
                         onPressed: () => _handleLogin(context),
                         style: ElevatedButton.styleFrom(
@@ -275,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // register
+                      /** Register Link */
                       Center(
                         child: GestureDetector(
                           onTap: () {

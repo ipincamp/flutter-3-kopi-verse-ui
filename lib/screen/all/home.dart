@@ -1,20 +1,25 @@
-import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:kopi_verse/screen/auth/login.dart';
-import 'package:kopi_verse/screen/customer/order_history.dart';
-import 'package:kopi_verse/screen/customer/cart.dart';
-import 'package:kopi_verse/screen/customer/catalog.dart';
-import 'package:kopi_verse/screen/admin/product.dart';
-import 'package:kopi_verse/screen/admin/customer.dart';
-import 'package:kopi_verse/screen/admin/cashier.dart';
-import 'package:kopi_verse/screen/admin/report.dart';
-import 'package:kopi_verse/screen/cashier/transaction.dart';
-import 'package:kopi_verse/screen/cashier/transaction_history.dart';
-import 'package:kopi_verse/screen/profile.dart';
-import 'package:kopi_verse/service/storage.dart';
+import 'package:flutter/material.dart';
+
+import './login.dart';
+import '../admin/cashier.dart';
+import '../admin/customer.dart';
+import '../admin/product.dart';
+import '../admin/report.dart';
+import '../all/profile.dart';
+import '../cashier/transaction.dart';
+import '../cashier/transaction_history.dart';
+import '../customer/cart.dart';
+import '../customer/catalog.dart';
+import '../customer/order_history.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String role;
+
+  const HomeScreen({
+    super.key,
+    required this.role,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -28,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _customerPages = [
     OrderHistoryScreen(),
     CatalogScreen(),
-    ProfileScreen(),
+    ProfileScreen(role: 'customer'),
   ];
 
   final List<Widget> _adminPages = [
@@ -36,28 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
     CashierScreen(),
     ReportScreen(),
     CustomerScreen(),
-    ProfileScreen(),
+    ProfileScreen(role: 'admin'),
   ];
 
   final List<Widget> _cashierPages = [
     TransactionHistoryScreen(),
     TransactionScreen(),
-    ProfileScreen(),
+    ProfileScreen(role: 'cashier'),
   ];
 
   @override
   void initState() {
     super.initState();
-    _userRoleFuture = _loadUserRole();
+    _userRoleFuture = Future.value(widget.role);
   }
 
-  Future<String?> _loadUserRole() async {
-    try {
-      return await Storage.take('auth_role');
-    } catch (e) {
-      return null;
-    }
-  }
+  // getter role
+  String get role => widget.role;
 
   List<Widget> _getPages(String role) {
     switch (role) {
@@ -100,7 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                             builder: (context) => CartScreen(),
                           )).then((_) {
-                        setState(() {});
+                        if (mounted) {
+                          setState(() {});
+                        }
                       });
                     },
                     backgroundColor: Color(0xFFA58E1E),
@@ -124,7 +126,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ][index];
                     break;
                   case 'cashier':
-                    icon = [Icons.history, Icons.attach_money, Icons.person][index];
+                    icon = [
+                      Icons.history,
+                      Icons.attach_money,
+                      Icons.person
+                    ][index];
                     break;
                   case 'customer':
                   default:
@@ -140,9 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.black
                   : Colors.white,
-              buttonBackgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.grey[800]
-                  : Colors.white,
+              buttonBackgroundColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
               backgroundColor: Theme.of(context).brightness == Brightness.dark
                   ? (Colors.grey[900] ?? Colors.black)
                   : Color(0xFF5B3D2E),

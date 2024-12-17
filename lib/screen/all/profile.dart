@@ -1,12 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/screen/auth/login.dart';
-import 'package:kopi_verse/service/auth.dart';
-import 'package:kopi_verse/service/storage.dart';
+
+import 'login.dart';
+import '../../service/auth.dart';
+import '../../service/storage.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String role;
+
+  const ProfileScreen({
+    super.key,
+    required this.role,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -18,16 +24,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _userRoleFuture = _loadUserRole();
+    _userRoleFuture = Future.value(widget.role);
   }
 
-  Future<String?> _loadUserRole() async {
-    try {
-      return await Storage.take('auth_role');
-    } catch (e) {
-      return null;
-    }
-  }
+  String get role => widget.role;
 
   @override
   Widget build(BuildContext context) {

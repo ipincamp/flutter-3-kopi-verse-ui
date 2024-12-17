@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:kopi_verse/screen/auth/login.dart';
-import 'package:kopi_verse/screen/home.dart';
-import 'package:kopi_verse/service/auth.dart';
-import 'package:kopi_verse/service/storage.dart';
 
-import './data/bg_data.dart';
-import './utils/text_utils.dart';
+import 'login.dart';
+import '../../common/text_util.dart';
+import '../../screen/all/home.dart';
+import '../../service/auth.dart';
+import '../../service/config.dart';
+import '../../service/storage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,75 +18,76 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  // controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  int selectedIndex = 0;
-  bool showOption = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startBackgroundChange();
-  }
-
-  void _startBackgroundChange() {
-    Future.delayed(const Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          selectedIndex = (selectedIndex + 1) % bgList.length;
-        });
-        _startBackgroundChange();
-      }
-    });
-  }
-
+  // handle register
   void _handleRegister(BuildContext context) async {
-    String name = _nameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    String confirmPassword = _confirmPasswordController.text;
+    final String name = _nameController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+    final String confirmPassword = _confirmPasswordController.text;
 
-    // attempt to register with AuthService
-    final response = await AuthService.register(name, email, password, confirmPassword);
-    final json = jsonDecode(response.body);
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill all fields"),
+        ),
+      );
+      return;
+    }
 
-    if (response.statusCode == 201) {
-      // register successful
-      await Storage.save('auth_token', json['data']['token']);
-      await Storage.save('auth_role', 'customer');
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password and Confirm Password must be the same"),
+        ),
+      );
+      return;
+    }
 
+    // connect with api
+    try {
+      final response = await AuthService.register(
+        name,
+        email,
+        password,
+        confirmPassword,
+      );
+
+      // register failed
+      if (response.statusCode != 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Register failed!'),
+          ),
+        );
+        return;
+      }
+
+      final json = jsonDecode(response.body);
+      final String token = json['data']['token'];
+      final String role = 'customer';
+
+      // save token
+      await Storage.save('auth_token', token);
+      await Storage.save('auth_role', role);
+
+      // navigate to home
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => HomeScreen(role: role),
         ),
       );
-    } else {
-      // register failed
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Icon(
-              Icons.error,
-              color: Colors.red,
-              size: 40,
-            ),
-            content: Text(json['errors']),
-            actions: [
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -98,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(bgList[selectedIndex]),
+            image: AssetImage(Config.bgList[1]),
             fit: BoxFit.fill,
           ),
         ),
@@ -129,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         size: 30,
                       )),
                       const Spacer(),
-                      // name input
+                      /** Full Name */
                       TextUtil(
                         text: "Full Name",
                       ),
@@ -156,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // email input
+                      /** Email */
                       TextUtil(
                         text: "Email",
                       ),
@@ -183,7 +184,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // password input
+                      /** Password */
                       TextUtil(
                         text: "Password",
                       ),
@@ -211,7 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // confirmation_password input
+                      /** Confirm Password */
                       TextUtil(
                         text: "Confirm Password",
                       ),
@@ -239,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // register button
+                      /** Action Button */
                       ElevatedButton(
                         onPressed: () => _handleRegister(context),
                         style: ElevatedButton.styleFrom(
@@ -255,7 +256,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const Spacer(),
-                      // login
+                      /** Login Link */
                       Center(
                         child: GestureDetector(
                           onTap: () {
