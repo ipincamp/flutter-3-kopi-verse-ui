@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './login.dart';
-import '../../service/auth.dart';
+import '../../provider/auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String role;
@@ -53,10 +52,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final response = await AuthService.logout();
-                    final responseJson = jsonDecode(response.body);
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
+                    final response = await authProvider.logout();
 
-                    if (response.statusCode == 202) {
+                    if (response) {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -66,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(responseJson['message']),
+                          content: Text(authProvider.errorMessage),
                         ),
                       );
                     }

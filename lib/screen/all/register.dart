@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'login.dart';
+import './login.dart';
 import '../../common/text_util.dart';
+import '../../provider/auth.dart';
 import '../../screen/all/home.dart';
-import '../../service/auth.dart';
 import '../../service/config.dart';
-import '../../service/storage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,14 +17,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  // handle register
+  // fungsi handle register
   void _handleRegister(BuildContext context) async {
     final String name = _nameController.text;
     final String email = _emailController.text;
@@ -53,22 +51,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // connect with api
+    // connect with api using AuthProvider
     try {
-      final response = await AuthService.register(
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final response = await authProvider.register(
         name,
         email,
         password,
         confirmPassword,
       );
-      final responseJson = jsonDecode(response.body);
 
-      if (response.statusCode == 201) {
-        final String authToken = responseJson['data']['token'];
-        final String authRole = 'customer';
-
-        await Storage.save('auth_token', authToken);
-        await Storage.save('auth_role', authRole);
+      if (response) {
+        final authRole = authProvider.role;
 
         // navigate to home
         Navigator.pushReplacement(
@@ -80,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(responseJson['errors']),
+            content: Text(authProvider.errorMessage),
           ),
         );
       }

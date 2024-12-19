@@ -1,15 +1,14 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './home.dart';
 import './register.dart';
 import '../../common/show_up_animation.dart';
 import '../../common/text_util.dart';
-import '../../service/auth.dart';
 import '../../service/config.dart';
-import '../../service/storage.dart';
+import '../../provider/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,6 +47,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill all fields"),
+        ),
+      );
+      return;
+    }
+
     if (!mounted) return;
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,32 +66,25 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // connect with api
+    // connect with api using AuthProvider
     try {
-      final response = await AuthService.login(
-        email,
-        password,
-      );
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final response = await authProvider.login(email, password);
       if (!mounted) return;
-      final responseJson = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        final String token = responseJson['data']['token'];
-        final String role = responseJson['data']['role'];
-
-        await Storage.save('auth_token', token);
-        await Storage.save('auth_role', role);
+      if (response) {
+        final authRole = authProvider.role;
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(role: role),
+            builder: (context) => HomeScreen(role: authRole),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(responseJson['errors']),
+            content: Text(authProvider.errorMessage),
           ),
         );
       }
