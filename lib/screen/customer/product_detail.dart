@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../screen/customer/cart.dart';
-import '../../service/product.dart';
+import './cart.dart';
+import '../../provider/product.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -19,20 +19,29 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  TextEditingController _quantityController = TextEditingController(text: '1');
+
   @override
   void initState() {
     super.initState();
+    _quantityController = TextEditingController(text: '1');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final service = Provider.of<ProductService>(context, listen: false);
-      service.getProductById(widget.productId);
+      Provider.of<ProductProvider>(context, listen: false)
+          .getProductById(widget.productId);
     });
+  }
+
+  @override
+  void dispose() {
+    _quantityController.dispose();
+    super.dispose();
   }
 
   int quantity = 1;
 
   @override
   Widget build(BuildContext context) {
-    final productService = Provider.of<ProductService>(context);
+    final productProvider = Provider.of<ProductProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -53,13 +62,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ],
       ),
       body: Container(
-        child: productService.isLoading
+        child: productProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
-            : productService.productDetail.id == ''
+            : productProvider.product.id == ''
                 ? const Center(child: Text('Product not found'))
-                : Consumer<ProductService>(
-                    builder: (context, productService, child) {
-                    final product = productService.productDetail;
+                : Consumer<ProductProvider>(
+                    builder: (context, productProvider, child) {
+                    final product = productProvider.product;
 
                     return Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -122,6 +131,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         ? () {
                                             setState(() {
                                               quantity--;
+                                              _quantityController.text =
+                                                  quantity.toString();
                                             });
                                           }
                                         : null,
@@ -131,15 +142,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     child: TextField(
                                       textAlign: TextAlign.center,
                                       keyboardType: TextInputType.number,
-                                      controller: TextEditingController(
-                                        text: '$quantity',
-                                      ),
+                                      controller: _quantityController,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly,
                                       ],
                                       onChanged: (value) {
                                         setState(() {
-                                          quantity = int.tryParse(value)!;
+                                          quantity = int.tryParse(value) ?? 1;
+                                          if (quantity < 1) {
+                                            quantity = 1;
+                                            _quantityController.text = '1';
+                                          }
                                         });
                                       },
                                       style: TextStyle(
@@ -153,6 +166,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     onPressed: () {
                                       setState(() {
                                         quantity++;
+                                        _quantityController.text =
+                                            quantity.toString();
                                       });
                                     },
                                   ),
@@ -161,7 +176,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               // add to cart
                               ElevatedButton(
                                 onPressed: () async {
-                                  final result = await productService.addToCart(
+                                  /*
+                                  final result = await productProvider.addToCart(
                                     product.id,
                                     quantity,
                                   );
@@ -182,6 +198,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       ),
                                     );
                                   }
+                                  */
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:

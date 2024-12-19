@@ -1,25 +1,28 @@
 class Product {
   final String id;
   final String name;
+  final String detail;
   final int price;
-  final String category;
   final String image;
+  final bool available;
 
   Product({
     required this.id,
     required this.name,
+    required this.detail,
     required this.price,
-    required this.category,
     required this.image,
+    required this.available,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       id: json['id'],
       name: json['name'],
+      detail: json['detail'],
       price: json['price'],
-      category: json['category'],
       image: json['image'],
+      available: json['available'].toLowerCase() == 'yes',
     );
   }
 
@@ -27,9 +30,10 @@ class Product {
     return {
       'id': id,
       'name': name,
+      'detail': detail,
       'price': price,
-      'category': category,
       'image': image,
+      'available': available ? 'Yes' : 'No',
     };
   }
 }

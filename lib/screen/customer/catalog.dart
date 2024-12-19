@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import './product_detail.dart';
 import '../../provider/product.dart';
 
 class CatalogScreen extends StatefulWidget {
@@ -16,7 +17,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      final productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
       if (!productProvider.isLoading && productProvider.products.isEmpty) {
         productProvider.getProducts();
       }
@@ -119,6 +121,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           return GestureDetector(
                             onTap: () {
                               // product detail
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductDetailScreen(
+                                    productId: product.id,
+                                  ),
+                                ),
+                              );
                             },
                             child: Container(
                               margin: const EdgeInsets.all(4.0),
@@ -129,8 +139,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                         image: NetworkImage(product.image),
                                         fit: BoxFit.cover,
                                         onError: (error, stackTrace) {
-                                          const Icon(Icons.broken_image,
-                                              size: 50);
+                                          const Icon(
+                                            Icons.broken_image,
+                                            size: 50,
+                                          );
                                         },
                                       )
                                     : null,
