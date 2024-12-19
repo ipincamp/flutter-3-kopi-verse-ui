@@ -34,7 +34,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Catalog'),
-        actions: [],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              productProvider.getProducts();
+            },
+          ),
+        ],
       ),
       body: productProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
