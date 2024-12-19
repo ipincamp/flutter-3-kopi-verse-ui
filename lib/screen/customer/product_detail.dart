@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import './cart.dart';
+import '../../provider/cart.dart';
 import '../../provider/product.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -29,6 +30,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       Provider.of<ProductProvider>(context, listen: false)
           .getProductById(widget.productId);
     });
+    // provider cart
+    Provider.of<CartProvider>(context, listen: false);
   }
 
   @override
@@ -42,6 +45,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,6 +87,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           /*
+                          TODO: implement image repository url
                           Image.network(
                             'https://example.com/product-image.jpg',
                             height: 200,
@@ -119,113 +124,134 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                           Spacer(),
-                          // harga produk dan tombol add to cart
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.remove),
-                                    onPressed: quantity > 1
-                                        ? () {
+                          // quantity & add to cart button
+                          cartProvider.isLoading
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const CircularProgressIndicator(),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Please wait...',
+                                      style: GoogleFonts.sora(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.remove),
+                                          onPressed: quantity > 1
+                                              ? () {
+                                                  setState(() {
+                                                    quantity--;
+                                                    _quantityController.text =
+                                                        quantity.toString();
+                                                  });
+                                                }
+                                              : null,
+                                        ),
+                                        SizedBox(
+                                          width: 50,
+                                          child: TextField(
+                                            textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            controller: _quantityController,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
+                                            onChanged: (value) {
+                                              setState(() {
+                                                quantity =
+                                                    int.tryParse(value) ?? 1;
+                                                if (quantity < 1) {
+                                                  quantity = 1;
+                                                  _quantityController.text =
+                                                      '1';
+                                                }
+                                              });
+                                            },
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () {
                                             setState(() {
-                                              quantity--;
+                                              quantity++;
                                               _quantityController.text =
                                                   quantity.toString();
                                             });
-                                          }
-                                        : null,
-                                  ),
-                                  SizedBox(
-                                    width: 50,
-                                    child: TextField(
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.number,
-                                      controller: _quantityController,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
+                                          },
+                                        ),
                                       ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          quantity = int.tryParse(value) ?? 1;
-                                          if (quantity < 1) {
-                                            quantity = 1;
-                                            _quantityController.text = '1';
-                                          }
-                                        });
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        final added =
+                                            await cartProvider.addToCart(
+                                          product.id,
+                                          quantity,
+                                        );
+
+                                        if (added) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  cartProvider.successMessage),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  cartProvider.errorMessage),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                       },
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.light
+                                                ? const Color(0xffC67C4E)
+                                                : const Color(0xffC67C4E),
+                                        foregroundColor: Colors.white,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                            color: const Color(0xffC67C4E),
+                                            width: 2,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Add to Cart',
+                                        style: GoogleFonts.sora(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.add),
-                                    onPressed: () {
-                                      setState(() {
-                                        quantity++;
-                                        _quantityController.text =
-                                            quantity.toString();
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              // add to cart
-                              ElevatedButton(
-                                onPressed: () async {
-                                  /*
-                                  final result = await productProvider.addToCart(
-                                    product.id,
-                                    quantity,
-                                  );
-                                  if (result) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'Product added to cart successfully!'),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            'Failed to add product to cart.'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                  */
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? const Color(0xffC67C4E)
-                                          : Colors.transparent,
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                      color: const Color(0xffC67C4E),
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
+                                  ],
                                 ),
-                                child: Text(
-                                  'Add to Cart',
-                                  style: GoogleFonts.sora(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     );

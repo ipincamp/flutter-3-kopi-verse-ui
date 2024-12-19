@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import './screen/all/splash.dart';
 import './provider/auth.dart';
+import './provider/cart.dart';
 import './provider/product.dart';
 
 void main() => runApp(
@@ -12,6 +13,7 @@ void main() => runApp(
     builder: (context) => MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
       ],
       child: const MyApp(),
