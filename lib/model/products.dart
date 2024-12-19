@@ -1,38 +1,34 @@
-class ProductDetail {
+class Products {
   final String id;
   final String name;
-  final String detail;
   final int price;
-  // final double rating;
+  final String category;
   final String image;
 
-  ProductDetail({
+  Products({
     required this.id,
     required this.name,
-    required this.detail,
     required this.price,
-    // required this.rating,
+    required this.category,
     required this.image,
   });
 
-  factory ProductDetail.fromJson(json) {
-    return ProductDetail(
+  factory Products.fromJson(Map<String, dynamic> json) {
+    return Products(
       id: json['id'],
       name: json['name'],
-      detail: json['detail'],
       price: json['price'],
-      // rating: json['rating'],
+      category: json['category'],
       image: json['image'],
     );
   }
 
-  toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'detail': detail,
       'price': price,
-      // 'rating': rating,
+      'category': category,
       'image': image,
     };
   }

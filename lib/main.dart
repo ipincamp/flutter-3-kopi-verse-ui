@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './screen/all/splash.dart';
-import './service/product.dart';
+import './provider/auth.dart';
+import './provider/cart.dart';
+import './provider/product.dart';
 
 void main() => runApp(
   DevicePreview(
     enabled: true,
     builder: (context) => MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProductService()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
       ],
       child: const MyApp(),
     ),

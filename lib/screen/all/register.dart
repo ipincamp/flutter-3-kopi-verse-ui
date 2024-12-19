@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'login.dart';
+import './login.dart';
 import '../../common/text_util.dart';
+import '../../provider/auth.dart';
 import '../../screen/all/home.dart';
-import '../../service/auth.dart';
 import '../../service/config.dart';
-import '../../service/storage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,13 +17,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  // handle register
+  // fungsi handle register
   void _handleRegister(BuildContext context) async {
     final String name = _nameController.text;
     final String email = _emailController.text;
@@ -52,42 +51,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // connect with api
+    // connect with api using AuthProvider
     try {
-      final response = await AuthService.register(
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final response = await authProvider.register(
         name,
         email,
         password,
         confirmPassword,
       );
 
-      // register failed
-      if (response.statusCode != 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Register failed!'),
+      if (response) {
+        final authRole = authProvider.role;
+
+        // navigate to home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(role: authRole),
           ),
         );
-        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authProvider.errorMessage),
+          ),
+        );
       }
-
-      final json = jsonDecode(response.body);
-      final String token = json['data']['token'];
-      final String role = 'customer';
-
-      // save token
-      await Storage.save('auth_token', token);
-      await Storage.save('auth_role', role);
-
-      // navigate to home
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(role: role),
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Register failed!"),
         ),
       );
-    } catch (e) {
-      print(e);
     }
   }
 

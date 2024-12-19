@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-import 'login.dart';
+import './login.dart';
 import '../../service/config.dart';
 import '../../common/splash_button.dart';
 
