@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/text_util.dart';
 import '../../provider/cart.dart';
 
 class CartScreen extends StatefulWidget {
@@ -171,9 +172,9 @@ class _CartScreenState extends State<CartScreen> {
                             subtitle: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Rp. ${cart.productPrice}/pcs'),
+                                Text('Rp ${cart.productPrice}/pcs'),
                                 Text(
-                                    'Rp. ${cart.productPrice * cart.itemQuantity}'),
+                                    'Rp ${cart.productPrice * cart.itemQuantity}'),
                               ],
                             ),
                           ),
@@ -181,6 +182,46 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     );
                   },
+                ),
+      bottomNavigationBar: cartProvider.isLoading
+          ? null
+          : cartProvider.carts.isEmpty
+              ? null
+              : BottomAppBar(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Rp ${cartProvider.carts.fold(0, (sum, cart) => sum + (cart.productPrice * cart.itemQuantity)).toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            //
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[800]
+                                    : const Color(0xffC67C4E),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: TextUtil(
+                            text: "Order",
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
     );
   }
