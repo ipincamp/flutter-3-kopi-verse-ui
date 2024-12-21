@@ -95,9 +95,18 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                 ),
                               ],
                             ),
-                            subtitle: Text(
-                              'Rp ${order.totalPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                              style: TextStyle(color: textColor),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text(
+                                'Rp ${order.totalPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                                style: TextStyle(color: textColor),
+                              ),
+                              Text(
+                                order.date,
+                                style: TextStyle(color: textColor),
+                              ),
+                              ],
                             ),
                           ),
                         ),
