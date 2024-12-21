@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './order_detail.dart';
 import '../../provider/order.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -66,7 +67,14 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                 : Colors.grey[400]),
                         child: GestureDetector(
                           onTap: () {
-                            //
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OrderDetailScreen(
+                                  orderId: order.barcode,
+                                ),
+                              ),
+                            );
                           },
                           child: ListTile(
                             leading: Icon(Icons.history, color: textColor),
