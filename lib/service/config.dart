@@ -3,6 +3,7 @@ class Config {
   static const String authUrl = '$baseUrl/auth';
   static const String productUrl = '$baseUrl/products';
   static const String cartUrl = '$baseUrl/cart';
+  static const String orderUrl = '$baseUrl/orders';
 
   static const List<String> bgList = [
     "assets/images/bg1.jpeg",

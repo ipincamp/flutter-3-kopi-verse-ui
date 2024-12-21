@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './order.dart';
 import '../../common/text_util.dart';
 import '../../provider/cart.dart';
+import '../../provider/order.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -17,7 +19,7 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
-      if (!cartProvider.isLoading) {
+      if (!cartProvider.isLoading && cartProvider.carts.isEmpty) {
         cartProvider.getCartItems();
       }
     });
@@ -202,8 +204,31 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            //
+                          onPressed: () async {
+                            final orderProvider = Provider.of<OrderProvider>(
+                                context,
+                                listen: false);
+                            final success = await orderProvider.createOrder();
+                            final barcode = orderProvider.getBarcode;
+                            final total = orderProvider.getTotal;
+
+                            if (success) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OrderScreen(
+                                    barcode: barcode,
+                                    total: total,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(orderProvider.errorMessage),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
