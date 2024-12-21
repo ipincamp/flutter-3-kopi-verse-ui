@@ -9,7 +9,6 @@ import '../admin/report.dart';
 import '../all/profile.dart';
 import '../cashier/transaction.dart';
 import '../cashier/transaction_history.dart';
-import '../customer/cart.dart';
 import '../customer/catalog.dart';
 import '../customer/order_history.dart';
 
@@ -92,23 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
           final pages = _getPages(role);
 
           return Scaffold(
-            floatingActionButton: role == 'customer'
-                ? FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CartScreen(),
-                          )).then((_) {
-                        if (mounted) {
-                          setState(() {});
-                        }
-                      });
-                    },
-                    backgroundColor: Color(0xFFA58E1E),
-                    child: Icon(Icons.shopping_cart),
-                  )
-                : null,
             bottomNavigationBar: CurvedNavigationBar(
               key: _bottomNavigationKey,
               index: 0,

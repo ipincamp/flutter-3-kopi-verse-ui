@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import './cart.dart';
 import './product_detail.dart';
 import '../../provider/product.dart';
 
@@ -208,6 +209,21 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     ),
                   ],
                 ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CartScreen(),
+              )).then((_) {
+            if (mounted) {
+              setState(() {});
+            }
+          });
+        },
+        backgroundColor: Color(0xFFA58E1E),
+        child: Icon(Icons.shopping_cart),
+      ),
     );
   }
 }
