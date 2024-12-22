@@ -214,6 +214,7 @@ class _CartScreenState extends State<CartScreen> {
                                   final total = orderProvider.total;
 
                                   if (success) {
+                                    cartProvider.getCartItems();
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
