@@ -61,18 +61,6 @@ class _OrderScreenState extends State<OrderScreen> {
                 color: textColor,
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Back'),
-                ),
-              ],
-            ),
           ],
         ),
       ),

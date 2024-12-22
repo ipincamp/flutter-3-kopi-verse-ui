@@ -94,6 +94,7 @@ class OrderProvider with ChangeNotifier {
         barcode = responseJson['data']['barcode'];
         total = int.parse(responseJson['data']['total'].toString());
         successMessage = responseJson['message'];
+        errorMessage = '';
         return true;
       } else {
         errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
@@ -125,6 +126,7 @@ class OrderProvider with ChangeNotifier {
             .map((data) => Orders.fromJson(data))
             .toList();
         successMessage = responseJson['message'];
+        errorMessage = '';
       } else {
         errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
       }
@@ -151,6 +153,7 @@ class OrderProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _order = Order.fromJson(responseJson['data']);
         successMessage = responseJson['message'];
+        errorMessage = '';
       } else {
         errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
       }

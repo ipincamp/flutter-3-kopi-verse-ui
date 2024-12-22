@@ -28,6 +28,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -203,47 +204,49 @@ class _CartScreenState extends State<CartScreen> {
                             fontSize: 24,
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            final orderProvider = Provider.of<OrderProvider>(
-                                context,
-                                listen: false);
-                            final success = await orderProvider.createOrder();
-                            final barcode = orderProvider.getBarcode;
-                            final total = orderProvider.getTotal;
+                        orderProvider.isLoading
+                            ? const CircularProgressIndicator()
+                            : ElevatedButton(
+                                onPressed: () async {
+                                  final success =
+                                      await orderProvider.createOrder();
+                                  final barcode = orderProvider.getBarcode;
+                                  final total = orderProvider.getTotal;
 
-                            if (success) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OrderScreen(
-                                    barcode: barcode,
-                                    total: total,
+                                  if (success) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OrderScreen(
+                                          barcode: barcode,
+                                          total: total,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text(orderProvider.errorMessage),
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.grey[800]
+                                          : const Color(0xffC67C4E),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
                                 ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(orderProvider.errorMessage),
+                                child: TextUtil(
+                                  text: "Order",
+                                  color: Colors.white,
                                 ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey[800]
-                                    : const Color(0xffC67C4E),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: TextUtil(
-                            text: "Order",
-                            color: Colors.white,
-                          ),
-                        ),
+                              ),
                       ],
                     ),
                   ),

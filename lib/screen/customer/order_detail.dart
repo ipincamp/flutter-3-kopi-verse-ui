@@ -63,7 +63,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             children: [
                               RichText(
                                 text: TextSpan(
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'DATE      ',
@@ -77,7 +82,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                               RichText(
                                 text: TextSpan(
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'ORDER   ',
@@ -91,7 +101,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                               RichText(
                                 text: TextSpan(
-                                  style: TextStyle(color: Colors.black),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'TOTAL    ',
@@ -109,7 +124,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               if (orderProvider.order.notes != null)
                                 RichText(
                                   text: TextSpan(
-                                    style: TextStyle(color: Colors.black),
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
                                     children: [
                                       TextSpan(
                                         text: 'NOTE     ',
