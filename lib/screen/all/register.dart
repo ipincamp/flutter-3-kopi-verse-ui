@@ -22,9 +22,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  bool _isLoading = false;
 
   // fungsi handle register
   void _handleRegister(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
     final String name = _nameController.text;
     final String email = _emailController.text;
     final String password = _passwordController.text;
@@ -39,6 +44,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           content: Text("Please fill all fields"),
         ),
       );
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 
@@ -48,6 +56,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           content: Text("Password and Confirm Password must be the same"),
         ),
       );
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 
@@ -84,6 +95,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           content: Text("Register failed!"),
         ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -223,6 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _confirmPasswordController,
                           obscureText: true,
                           style: const TextStyle(color: Colors.white),
+                          onSubmitted: (_) => _handleRegister(context),
                           decoration: const InputDecoration(
                             suffixIcon: Icon(
                               Icons.lock,
@@ -238,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const Spacer(),
                       /** Action Button */
                       ElevatedButton(
-                        onPressed: () => _handleRegister(context),
+                        onPressed: _isLoading ? null : () => _handleRegister(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xffC67C4E),
                           shape: RoundedRectangleBorder(
@@ -246,10 +262,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           minimumSize: const Size(double.infinity, 40),
                         ),
-                        child: TextUtil(
-                          text: "Register",
-                          color: Colors.white,
-                        ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                            : TextUtil(
+                                text: "Register",
+                                color: Colors.white,
+                              ),
                       ),
                       const Spacer(),
                       /** Login Link */
