@@ -19,7 +19,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final transactionProvider =
           Provider.of<OrderProvider>(context, listen: false);
-      if (!transactionProvider.isLoading) {
+      if (!transactionProvider.isLoading && transactionProvider.orders.isEmpty) {
         transactionProvider.getAllOrders();
       }
     });
@@ -100,8 +100,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                             subtitle: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                /*
                                 Text(
                                   'Rp ${transaction.totalPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                                  style: TextStyle(color: textColor),
+                                ),
+                                */
+                                Text(
+                                  transaction.customer,
                                   style: TextStyle(color: textColor),
                                 ),
                                 Text(

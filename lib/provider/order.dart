@@ -12,6 +12,7 @@ class OrderProvider with ChangeNotifier {
   List<Orders> _orders = [];
   Order _order = Order(
     barcode: '',
+    customer: '',
     date: '',
     total: 0,
     status: '',
@@ -41,6 +42,7 @@ class OrderProvider with ChangeNotifier {
   void resetOrder() {
     _order = Order(
       barcode: '',
+      customer: '',
       date: '',
       total: 0,
       status: '',
@@ -123,12 +125,19 @@ class OrderProvider with ChangeNotifier {
       final responseJson = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        _orders = (responseJson['data'] as List)
-            .map((data) => Orders.fromJson(data))
-            .toList();
-        _successMessage = responseJson['message'];
-        _errorMessage = '';
+        if (responseJson['data'] is List && responseJson['data'].isNotEmpty) {
+          _orders = (responseJson['data'] as List)
+              .map((data) => Orders.fromJson(data))
+              .toList();
+          _successMessage = responseJson['message'];
+          _errorMessage = '';
+        } else {
+          _orders = [];
+          _successMessage = responseJson['message'] ?? 'No orders found';
+          _errorMessage = '';
+        }
       } else {
+        _orders = [];
         _errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
       }
     } catch (error) {

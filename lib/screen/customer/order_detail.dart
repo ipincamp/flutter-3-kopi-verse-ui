@@ -178,29 +178,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       : (index % 2 == 0
                                           ? Colors.grey[300]
                                           : Colors.grey[400]),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      //
-                                    },
-                                    child: ListTile(
-                                      leading: const Icon(Icons.shopping_cart),
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(item.productName),
-                                          Text('x${item.quantity}'),
-                                        ],
-                                      ),
-                                      subtitle: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('Rp ${item.productPrice}/pcs'),
-                                          Text(
-                                              'Rp ${item.productPrice * item.quantity}'),
-                                        ],
-                                      ),
+                                  child: ListTile(
+                                    leading: const Icon(Icons.shopping_cart),
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(item.productName),
+                                        Text('x${item.quantity}'),
+                                      ],
+                                    ),
+                                    subtitle: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Rp ${item.productPrice}/pcs'),
+                                        Text(
+                                            'Rp ${item.productPrice * item.quantity}'),
+                                      ],
                                     ),
                                   ),
                                 ),

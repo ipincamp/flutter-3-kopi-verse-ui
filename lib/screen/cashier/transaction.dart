@@ -79,7 +79,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             ),
                           ]
                         : [
-                            // order code, total, status, button to change status
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,20 +99,19 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                   builder: (context) {
                                     List<String> statusOptions;
                                     switch (orderProvider.order.status) {
-                                      case 'wait':
+                                      case 'wait': // waiting for checking by cashier
                                         statusOptions = ['prep', 'cancel'];
                                         break;
-                                      // wait to payment
-                                      case 'prep':
+                                      case 'prep': // waiting for payment
                                         statusOptions = ['ready', 'cancel'];
                                         break;
-                                      case 'ready':
+                                      case 'ready': // already paid, ready to craft
                                         statusOptions = ['done'];
                                         break;
-                                      case 'done':
+                                      case 'done': // already crafted, ready to serve
                                         statusOptions = [];
                                         break;
-                                      case 'cancel':
+                                      case 'cancel': // order is canceled
                                         statusOptions = [];
                                         break;
                                       default:
