@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/order.dart';
@@ -80,24 +81,40 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   ],
                                 ),
                               ),
-                              RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'ORDER   ',
+                              Row(
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: 'ORDER   ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        TextSpan(text: ' '),
+                                        TextSpan(
+                                            text: orderProvider.order.barcode),
+                                      ],
                                     ),
-                                    TextSpan(text: ' '),
-                                    TextSpan(text: orderProvider.order.barcode),
-                                  ],
-                                ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.copy),
+                                    onPressed: () {
+                                      Clipboard.setData(ClipboardData(
+                                          text: orderProvider.order.barcode));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text('Barcode copied!'),
+                                      ));
+                                    },
+                                  ),
+                                ],
                               ),
                               RichText(
                                 text: TextSpan(
