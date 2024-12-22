@@ -36,6 +36,7 @@ class OrderItem {
 
 class Order {
   final String barcode;
+  final String customer;
   final String date;
   final int total;
   final String status;
@@ -44,6 +45,7 @@ class Order {
 
   Order({
     required this.barcode,
+    required this.customer,
     required this.date,
     required this.total,
     required this.status,
@@ -57,6 +59,7 @@ class Order {
 
     return Order(
       barcode: json['barcode'],
+      customer: json['customer'],
       date: json['date'],
       total: json['total'],
       status: json['status'],
@@ -68,6 +71,7 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'barcode': barcode,
+      'customer': customer,
       'date': date,
       'total': total,
       'status': status,

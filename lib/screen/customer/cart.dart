@@ -210,10 +210,11 @@ class _CartScreenState extends State<CartScreen> {
                                 onPressed: () async {
                                   final success =
                                       await orderProvider.createOrder();
-                                  final barcode = orderProvider.getBarcode;
-                                  final total = orderProvider.getTotal;
+                                  final barcode = orderProvider.barcode;
+                                  final total = orderProvider.total;
 
                                   if (success) {
+                                    cartProvider.getCartItems();
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(

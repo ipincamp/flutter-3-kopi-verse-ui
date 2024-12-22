@@ -253,24 +253,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const Spacer(),
                       /** Action Button */
-                      ElevatedButton(
-                        onPressed: _isLoading ? null : () => _handleRegister(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffC67C4E),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          minimumSize: const Size(double.infinity, 40),
-                        ),
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
-                            : TextUtil(
+                      _isLoading
+                          ? const Center(
+                              child: SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () => _handleRegister(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xffC67C4E),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                minimumSize: const Size(double.infinity, 40),
+                              ),
+                              child: TextUtil(
                                 text: "Register",
                                 color: Colors.white,
                               ),
-                      ),
+                            ),
                       const Spacer(),
                       /** Login Link */
                       Center(

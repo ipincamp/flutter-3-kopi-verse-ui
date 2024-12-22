@@ -4,31 +4,32 @@ import 'package:provider/provider.dart';
 
 import '../../provider/order.dart';
 
-class OrderDetailScreen extends StatefulWidget {
-  final String orderId;
+class TransactionDetailScreen extends StatefulWidget {
+  final String transactionId;
 
-  const OrderDetailScreen({
+  const TransactionDetailScreen({
     super.key,
-    required this.orderId,
+    required this.transactionId,
   });
 
   @override
-  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+  State<TransactionDetailScreen> createState() =>
+      TransactionDetailScreenState();
 }
 
-class _OrderDetailScreenState extends State<OrderDetailScreen> {
+class TransactionDetailScreenState extends State<TransactionDetailScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<OrderProvider>(context, listen: false)
-          .getOrderByBarcode(widget.orderId);
+          .getOrderByBarcode(widget.transactionId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final transactionProvider = Provider.of<OrderProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,20 +38,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              orderProvider.getOrderByBarcode(widget.orderId);
+              transactionProvider.getOrderByBarcode(widget.transactionId);
             },
           ),
         ],
       ),
-      body: orderProvider.isLoading
+      body: transactionProvider.isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : orderProvider.errorMessage.isNotEmpty
+          : transactionProvider.errorMessage.isNotEmpty
               ? Center(
-                  child: Text(orderProvider.errorMessage),
+                  child: Text(transactionProvider.errorMessage),
                 )
-              : orderProvider.order.barcode.isEmpty
+              : transactionProvider.order.barcode.isEmpty
                   ? Center(
                       child: Text('No order found'),
                     )
@@ -77,7 +78,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     TextSpan(text: ' '),
-                                    TextSpan(text: orderProvider.order.date),
+                                    TextSpan(
+                                        text: transactionProvider.order.date),
                                   ],
                                 ),
                               ),
@@ -99,7 +101,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                         ),
                                         TextSpan(text: ' '),
                                         TextSpan(
-                                            text: orderProvider.order.barcode),
+                                            text: transactionProvider
+                                                .order.barcode),
                                       ],
                                     ),
                                   ),
@@ -107,7 +110,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                     icon: Icon(Icons.copy),
                                     onPressed: () {
                                       Clipboard.setData(ClipboardData(
-                                          text: orderProvider.order.barcode));
+                                          text: transactionProvider
+                                              .order.barcode));
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                         content: Text('Barcode copied!'),
@@ -133,12 +137,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                     TextSpan(text: ' '),
                                     TextSpan(
                                       text:
-                                          'Rp ${orderProvider.order.total.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} (${orderProvider.order.status})',
+                                          'Rp ${transactionProvider.order.total.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} (${transactionProvider.order.status})',
                                     ),
                                   ],
                                 ),
                               ),
-                              if (orderProvider.order.notes != null)
+                              if (transactionProvider.order.notes != null)
                                 RichText(
                                   text: TextSpan(
                                     style: TextStyle(
@@ -154,7 +158,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       TextSpan(text: ':'),
-                                      TextSpan(text: orderProvider.order.notes),
+                                      TextSpan(
+                                          text:
+                                              transactionProvider.order.notes),
                                     ],
                                   ),
                                 ),
@@ -163,9 +169,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: orderProvider.order.items.length,
+                            itemCount: transactionProvider.order.items.length,
                             itemBuilder: (context, index) {
-                              final item = orderProvider.order.items[index];
+                              final item =
+                                  transactionProvider.order.items[index];
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 2.0),

@@ -17,7 +17,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-      if (!orderProvider.isLoading && orderProvider.orders.isEmpty) {
+      if (!orderProvider.isLoading) {
         orderProvider.getAllOrders();
       }
     });
