@@ -8,12 +8,17 @@ import '../service/storage.dart';
 
 class AuthProvider with ChangeNotifier {
   bool _isAuth = false;
+  bool _isLoading = false;
   String _errorMessage = '';
   String _role = '';
   String _token = '';
 
   bool get isAuth {
     return _isAuth;
+  }
+
+  bool get isLoading {
+    return _isLoading;
   }
 
   set isAuth(bool value) {
@@ -39,6 +44,11 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  set setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
   String get token {
     return _token;
   }
@@ -56,6 +66,8 @@ class AuthProvider with ChangeNotifier {
     String passwordConfirmation,
   ) async {
     bool success = false;
+    _isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Config.authUrl}/register'),
@@ -93,6 +105,7 @@ class AuthProvider with ChangeNotifier {
       _isAuth = false;
       _errorMessage = error.toString();
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
     return success;
@@ -104,6 +117,8 @@ class AuthProvider with ChangeNotifier {
     String password,
   ) async {
     bool success = false;
+    _isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('${Config.authUrl}/login'),
@@ -139,6 +154,7 @@ class AuthProvider with ChangeNotifier {
       _isAuth = false;
       _errorMessage = error.toString();
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
     return success;
@@ -147,6 +163,8 @@ class AuthProvider with ChangeNotifier {
   // Logout
   Future<bool> logout() async {
     bool success = false;
+    _isLoading = true;
+    notifyListeners();
     try {
       final authToken = await Storage.take('auth_token');
       final response = await http.post(
@@ -174,6 +192,7 @@ class AuthProvider with ChangeNotifier {
       _isAuth = false;
       _errorMessage = error.toString();
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
     return success;

@@ -20,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
 
   int selectedIndex = 0;
   bool showOption = false;
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _emailFocusNode.requestFocus();
     Future.delayed(const Duration(seconds: 15), () {
       if (!mounted) return;
       if (selectedIndex < Config.bgList.length - 1) {
@@ -69,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // connect with api using AuthProvider
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.setLoading = true;
       final response = await authProvider.login(email, password);
       if (!mounted) return;
 
@@ -94,11 +97,17 @@ class _LoginScreenState extends State<LoginScreen> {
           content: Text("Login failed"),
         ),
       );
+    } finally {
+      if (mounted) {
+        Provider.of<AuthProvider>(context, listen: false).setLoading = false;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       floatingActionButton: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -227,6 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: TextField(
                           controller: _emailController,
+                          focusNode: _emailFocusNode,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
                             suffixIcon: Icon(
@@ -256,6 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                           obscureText: true,
                           style: const TextStyle(color: Colors.white),
+                          onSubmitted: (_) => _handleLogin(context),
                           decoration: const InputDecoration(
                             suffixIcon: Icon(
                               Icons.lock,
@@ -270,20 +281,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const Spacer(),
                       /** Action Button */
-                      ElevatedButton(
-                        onPressed: () => _handleLogin(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffC67C4E),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          minimumSize: const Size(double.infinity, 40),
-                        ),
-                        child: TextUtil(
-                          text: "Login",
-                          color: Colors.white,
-                        ),
-                      ),
+                      authProvider.isLoading
+                          ? const Center(
+                              child: SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () => _handleLogin(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xffC67C4E),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                minimumSize: const Size(double.infinity, 40),
+                              ),
+                              child: TextUtil(
+                                text: "Login",
+                                color: Colors.white,
+                              ),
+                            ),
                       const Spacer(),
                       /** Register Link */
                       Center(
