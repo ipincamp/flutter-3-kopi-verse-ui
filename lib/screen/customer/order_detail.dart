@@ -22,12 +22,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<OrderProvider>(context, listen: false)
-          .getOrderByBarcode(widget.orderId)
-          .then((_) {
-        // Log the order details for debugging
-        final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-        print('Order details: ${orderProvider.order}');
-      });
+          .getOrderByBarcode(widget.orderId);
     });
   }
 
@@ -42,10 +37,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              orderProvider.getOrderByBarcode(widget.orderId).then((_) {
-                // Log the order details for debugging
-                print('Order details after refresh: ${orderProvider.order}');
-              });
+              orderProvider.getOrderByBarcode(widget.orderId);
             },
           ),
         ],
