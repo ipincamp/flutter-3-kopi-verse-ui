@@ -1,9 +1,9 @@
 class Config {
-  static const String baseUrl = 'http://127.0.0.1:8000/api';
-  static const String authUrl = '$baseUrl/auth';
-  static const String productUrl = '$baseUrl/products';
-  static const String cartUrl = '$baseUrl/cart';
-  static const String orderUrl = '$baseUrl/orders';
+  static String baseUrl = 'http://127.0.0.1:8000';
+  static String authUrl = '$baseUrl/api/auth';
+  static String productUrl = '$baseUrl/api/products';
+  static String cartUrl = '$baseUrl/api/cart';
+  static String orderUrl = '$baseUrl/api/orders';
 
   static const List<String> bgList = [
     "assets/images/bg1.jpeg",
