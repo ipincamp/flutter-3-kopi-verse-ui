@@ -2,10 +2,9 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 import './login.dart';
-import '../admin/cashier.dart';
-import '../admin/customer.dart';
 import '../admin/product.dart';
-import '../admin/report.dart';
+// import '../admin/report.dart';
+import '../admin/user.dart';
 import '../all/profile.dart';
 import '../cashier/transaction.dart';
 import '../cashier/transaction_history.dart';
@@ -37,9 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _adminPages = [
     ProductScreen(),
-    CashierScreen(),
-    ReportScreen(),
-    CustomerScreen(),
+    UserScreen(),
+    // ReportScreen(),
     ProfileScreen(role: 'admin'),
   ];
 
@@ -101,8 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 'admin':
                     icon = [
                       Icons.production_quantity_limits,
-                      Icons.people_rounded,
-                      Icons.report,
                       Icons.people,
                       Icons.person,
                     ][index];

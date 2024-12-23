@@ -7,6 +7,7 @@ import './provider/auth.dart';
 import './provider/cart.dart';
 import './provider/order.dart';
 import './provider/product.dart';
+import 'provider/user.dart';
 
 void main() => runApp(
   DevicePreview(
@@ -17,6 +18,7 @@ void main() => runApp(
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: const MyApp(),
     ),

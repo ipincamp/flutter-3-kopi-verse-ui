@@ -5,6 +5,7 @@ class Config {
   static String cartUrl = '$baseUrl/api/cart';
   static String orderUrl = '$baseUrl/api/orders';
   static String uploadUrl = '$baseUrl/api/files';
+  static String userUrl = '$baseUrl/api/users';
 
   static const List<String> bgList = [
     "assets/images/bg1.jpeg",
