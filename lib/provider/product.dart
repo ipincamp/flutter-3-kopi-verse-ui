@@ -18,6 +18,8 @@ class ProductProvider with ChangeNotifier {
     image: '',
     available: false,
   );
+  String _productId = '';
+  String _productName = '';
   String _errorMessage = '';
   bool _isLoading = false;
 
@@ -27,6 +29,14 @@ class ProductProvider with ChangeNotifier {
 
   Product get product {
     return _product;
+  }
+
+  String get productId {
+    return _productId;
+  }
+
+  String get productName {
+    return _productName;
   }
 
   String get errorMessage {
@@ -119,4 +129,47 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // add product
+  Future<bool> addProduct(
+    String name,
+    String detail,
+    int price,
+    String category,
+  ) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final authToken = await Storage.take('auth_token');
+      final response = await http.post(
+        Uri.parse(Config.productUrl),
+        headers: Config.headers(token: authToken),
+        body: jsonEncode(<String, dynamic>{
+          'name': name,
+          'detail': detail,
+          'price': price,
+          'category': category,
+        }),
+      );
+      final responseJson = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _productId = responseJson['data']['id'];
+        _productName = responseJson['data']['name'];
+        errorMessage = '';
+        return true;
+      } else {
+        errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
+        return false;
+      }
+    } catch (error) {
+      errorMessage = error.toString();
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // update product image
 }
