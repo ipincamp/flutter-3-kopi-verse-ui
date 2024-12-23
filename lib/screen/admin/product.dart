@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kopi_verse/screen/all/upload.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/product.dart';
 import '../customer/catalog.dart';
+import '../../provider/product.dart';
+import '../../screen/all/upload.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({super.key});
@@ -26,7 +26,6 @@ class _ProductScreenState extends State<ProductScreen> {
     });
   }
 
-  // dispose
   @override
   void dispose() {
     super.dispose();
@@ -34,51 +33,6 @@ class _ProductScreenState extends State<ProductScreen> {
 
   int selectedCategory = 0;
   int chooseCategory = 0;
-
-/*
-  Future<void> _confirmDelete(BuildContext context, String id) async {
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
-
-    final confirm = await showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Konfirmasi Hapus'),
-          content: const Text('Apakah Anda yakin akan menghapus data ini?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(ctx).pop(false);
-              },
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(ctx).pop(true);
-              },
-              child: const Text('Hapus'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirm == true && mounted) {
-      final success = await productProvider.deleteBarang(id);
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Barang berhasil dihapus')),
-        );
-        productProvider.fetchBarang(); // Refresh list after deleting
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal menghapus barang')),
-        );
-      }
-    }
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -99,20 +53,7 @@ class _ProductScreenState extends State<ProductScreen> {
       body: productProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : productProvider.products.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Tidak ada data barang.'),
-                      ElevatedButton(
-                        onPressed: () {
-                          // productProvider.fetchBarang();
-                        },
-                        child: const Text('Coba Lagi'),
-                      ),
-                    ],
-                  ),
-                )
+              ? Center(child: Text('Product is empty'))
               : Column(
                   children: [
                     Padding(
@@ -184,7 +125,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               final TextEditingController nameController =
                                   TextEditingController(text: product.name);
                               final TextEditingController detailController =
-                                  TextEditingController();
+                                  TextEditingController(text: product.detail);
                               final TextEditingController priceController =
                                   TextEditingController(
                                       text: product.price.toString());
@@ -382,8 +323,10 @@ class _ProductScreenState extends State<ProductScreen> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
-                                              content: Text(
-                                                  'Item successfully deleted')),
+                                            content: Text(
+                                              'Item successfully deleted',
+                                            ),
+                                          ),
                                         );
                                         productProvider
                                             .getProducts(); // Refresh list after deleting
@@ -509,17 +452,6 @@ class _ProductScreenState extends State<ProductScreen> {
                             if (mounted) {
                               Navigator.of(ctx).pop();
                               if (success) {
-                                // uploading product image
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UploadScreen(
-                                      title:
-                                          'Upload Image For ${productProvider.productName}',
-                                      productId: productProvider.productId,
-                                    ),
-                                  ),
-                                );
                                 productProvider.getProducts();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(

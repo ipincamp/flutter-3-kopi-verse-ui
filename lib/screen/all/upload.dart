@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+
+import '../../service/config.dart';
 
 class UploadScreen extends StatefulWidget {
   final String title;
@@ -30,6 +33,30 @@ class _UploadScreenState extends State<UploadScreen> {
         _file = File(result.files.single.path!);
       });
     }
+
+    // TODO: upload to server via http
+    final url = Config.uploadUrl;
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(url),
+    );
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        await _file!.readAsBytes(),
+        filename: _fileName!,
+      ),
+    );
+
+    request.fields['productId'] = widget.productId;
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      print('Uploaded');
+    } else {
+      print('Failed');
+    }
   }
 
   @override
@@ -37,6 +64,14 @@ class _UploadScreenState extends State<UploadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
