@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/user.dart';
+import '../../provider/auth.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -15,13 +15,13 @@ class _UserScreenState extends State<UserScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserProvider>(context, listen: false).getUsers();
+      Provider.of<AuthProvider>(context, listen: false).getUsers();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,6 +38,7 @@ class _UserScreenState extends State<UserScreen> {
                     itemCount: userProvider.users.length,
                     itemBuilder: (context, index) {
                       final user = userProvider.users[index];
+                      print(user);
 
                       return ListTile(
                         leading: CircleAvatar(
