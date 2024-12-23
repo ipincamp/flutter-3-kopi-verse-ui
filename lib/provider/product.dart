@@ -23,29 +23,12 @@ class ProductProvider with ChangeNotifier {
   String _errorMessage = '';
   bool _isLoading = false;
 
-  List<Products> get products {
-    return [..._products];
-  }
-
-  Product get product {
-    return _product;
-  }
-
-  String get productId {
-    return _productId;
-  }
-
-  String get productName {
-    return _productName;
-  }
-
-  String get errorMessage {
-    return _errorMessage;
-  }
-
-  bool get isLoading {
-    return _isLoading;
-  }
+  List<Products> get products => [..._products];
+  Product get product => _product;
+  String get productId => _productId;
+  String get productName => _productName;
+  String get errorMessage => _errorMessage;
+  bool get isLoading => _isLoading;
 
   set errorMessage(String value) {
     if (_errorMessage != value) {
@@ -61,10 +44,8 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Get all products
   Future<void> getProducts() async {
-    isLoading = true;
-    notifyListeners();
+    _setLoading(true);
     try {
       final authToken = await Storage.take('auth_token');
       final response = await http.get(
@@ -74,29 +55,22 @@ class ProductProvider with ChangeNotifier {
       final responseJson = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        if (responseJson['data'] != null) {
-          _products = (responseJson['data'] as List)
-              .map((product) => Products.fromJson(product))
-              .toList();
-        } else {
-          _products = [];
-        }
-        errorMessage = '';
+        _products = (responseJson['data'] as List)
+            .map((product) => Products.fromJson(product))
+            .toList();
+        _setErrorMessage('');
       } else {
-        errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
+        _setErrorMessage(responseJson['errors'] ?? 'Unknown error occurred');
       }
     } catch (error) {
-      errorMessage = error.toString();
+      _setErrorMessage(error.toString());
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
-  // Get single product
   Future<void> getProductById(String id) async {
-    isLoading = true;
-    notifyListeners();
+    _setLoading(true);
     try {
       final authToken = await Storage.take('auth_token');
       final response = await http.get(
@@ -106,39 +80,25 @@ class ProductProvider with ChangeNotifier {
       final responseJson = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        if (responseJson['data'] != null) {
-          _product = Product.fromJson(responseJson['data']);
-        } else {
-          _product = Product(
-            id: '',
-            name: '',
-            detail: '',
-            price: 0,
-            image: '',
-            available: false,
-          );
-        }
-        errorMessage = '';
+        _product = Product.fromJson(responseJson['data']);
+        _setErrorMessage('');
       } else {
-        errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
+        _setErrorMessage(responseJson['errors'] ?? 'Unknown error occurred');
       }
     } catch (error) {
-      errorMessage = error.toString();
+      _setErrorMessage(error.toString());
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
-  // add product
   Future<bool> addProduct(
     String name,
     String detail,
     int price,
     String category,
   ) async {
-    isLoading = true;
-    notifyListeners();
+    _setLoading(true);
     try {
       final authToken = await Storage.take('auth_token');
       final response = await http.post(
@@ -156,20 +116,97 @@ class ProductProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         _productId = responseJson['data']['id'];
         _productName = responseJson['data']['name'];
-        errorMessage = '';
+        _setErrorMessage('');
         return true;
       } else {
-        errorMessage = responseJson['errors'] ?? 'Unknown error occurred';
+        _setErrorMessage(responseJson['errors'] ?? 'Unknown error occurred');
         return false;
       }
     } catch (error) {
-      errorMessage = error.toString();
+      _setErrorMessage(error.toString());
       return false;
     } finally {
-      isLoading = false;
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> updateProduct(
+    String id,
+    String name,
+    String detail,
+    int price,
+    String category,
+  ) async {
+    _setLoading(true);
+    try {
+      final authToken = await Storage.take('auth_token');
+      final response = await http.put(
+        Uri.parse('${Config.productUrl}/$id'),
+        headers: Config.headers(token: authToken),
+        body: jsonEncode(<String, dynamic>{
+          'name': name,
+          'detail': detail,
+          'price': price,
+          'category': category,
+        }),
+      );
+      final responseJson = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        _productId = responseJson['data']['id'];
+        _productName = responseJson['data']['name'];
+        _setErrorMessage('');
+        return true;
+      } else {
+        _setErrorMessage(responseJson['errors'] ?? 'Unknown error occurred');
+        return false;
+      }
+    } catch (error) {
+      _setErrorMessage(error.toString());
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> deleteProduct(String id) async {
+    _setLoading(true);
+    try {
+      final authToken = await Storage.take('auth_token');
+      final response = await http.delete(
+        Uri.parse('${Config.productUrl}/$id'),
+        headers: Config.headers(token: authToken),
+      );
+      final responseJson = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        _productId = '';
+        _productName = '';
+        _setErrorMessage('');
+        return true;
+      } else {
+        _setErrorMessage(responseJson['errors'] ?? 'Unknown error occurred');
+        return false;
+      }
+    } catch (error) {
+      _setErrorMessage(error.toString());
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _setLoading(bool value) {
+    if (_isLoading != value) {
+      _isLoading = value;
       notifyListeners();
     }
   }
 
-  // update product image
+  void _setErrorMessage(String value) {
+    if (_errorMessage != value) {
+      _errorMessage = value;
+      notifyListeners();
+    }
+  }
 }
