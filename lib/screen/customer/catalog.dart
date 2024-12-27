@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../service/config.dart';
 import './cart.dart';
 import './product_detail.dart';
 import '../../provider/product.dart';
@@ -144,7 +145,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 borderRadius: BorderRadius.circular(12.0),
                                 image: product.image != 'no-image.jpg'
                                     ? DecorationImage(
-                                        image: NetworkImage(product.image),
+                                        image: NetworkImage(
+                                          '${Config.baseUrl}/assets/${product.image}',
+                                        ),
                                         fit: BoxFit.cover,
                                         onError: (error, stackTrace) {
                                           const Icon(

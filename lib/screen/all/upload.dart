@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 import '../../service/config.dart';
+import '../../service/storage.dart';
 
 class UploadScreen extends StatefulWidget {
   final String title;
@@ -23,39 +24,44 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   String? _fileName;
   File? _file;
+  bool _uploading = false;
+  String? _uploadStatus;
 
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+  Future<void> uploadImage() async {
+    setState(() {
+      _uploading = true;
+      _uploadStatus = null;
+    });
+
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
 
     if (result != null) {
       setState(() {
+        _file = File(result.files.single.path ?? '');
         _fileName = result.files.single.name;
-        _file = File(result.files.single.path!);
       });
-    }
 
-    // TODO: upload to server via http
-    final url = Config.uploadUrl;
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse(url),
-    );
+      final authToken = await Storage.take('auth_token');
+      final url = Uri.parse(Config.uploadUrl);
+      final request = http.MultipartRequest('POST', url)
+        ..headers.addAll(Config.headers(token: authToken))
+        ..fields['name'] = widget.productId
+        ..files.add(await http.MultipartFile.fromPath('file', _file!.path));
 
-    request.files.add(
-      http.MultipartFile.fromBytes(
-        'file',
-        await _file!.readAsBytes(),
-        filename: _fileName!,
-      ),
-    );
+      final response = await request.send();
+      // final responseBody = await response.stream.bytesToString();
+      // print(responseBody);
 
-    request.fields['productId'] = widget.productId;
-
-    final response = await request.send();
-    if (response.statusCode == 200) {
-      print('Uploaded');
+      setState(() {
+        _uploading = false;
+        _uploadStatus =
+            response.statusCode == 201 ? 'Upload successful' : 'Upload failed';
+      });
     } else {
-      print('Failed');
+      setState(() {
+        _uploading = false;
+        _uploadStatus = 'No file selected';
+      });
     }
   }
 
@@ -64,31 +70,34 @@ class _UploadScreenState extends State<UploadScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: _pickFile,
-              child: Text('Pick File'),
+              onPressed: _uploading ? null : uploadImage,
+              child:
+                  _uploading ? CircularProgressIndicator() : Text('Pick File'),
             ),
             SizedBox(height: 20),
-            Text(
-              _fileName != null
-                  ? 'Selected File: $_fileName'
-                  : 'No file selected',
-            ),
+            if (_fileName != null)
+              Text(
+                'Selected File: $_fileName',
+              ),
             SizedBox(height: 20),
-            _file != null ? Image.file(_file!) : Container(),
+            if (_file != null) Image.file(_file!),
+            SizedBox(height: 20),
+            if (_uploadStatus != null)
+              Text(
+                _uploadStatus!,
+                style: TextStyle(
+                  color: _uploadStatus == 'Upload successful'
+                      ? Colors.green
+                      : Colors.red,
+                ),
+              ),
           ],
         ),
       ),

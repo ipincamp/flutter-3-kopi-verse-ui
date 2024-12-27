@@ -1,39 +1,43 @@
 class User {
-  final String id;
+  final String uniqueId;
   final String name;
   final String email;
-  final String role;
-  final String joinedAt;
   final String image;
+  final String role;
+  final String joinSince;
+  final int allOrders;
 
   User({
-    required this.id,
+    required this.uniqueId,
     required this.name,
     required this.email,
-    required this.joinedAt,
-    required this.role,
     required this.image,
+    required this.role,
+    required this.joinSince,
+    required this.allOrders,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
+      uniqueId: json['unique_id'],
       name: json['name'],
       email: json['email'],
-      joinedAt: json['joined_at'],
-      role: json['role'],
       image: json['image'],
+      role: json['role'],
+      joinSince: json['join_since'],
+      allOrders: json['all_orders'],
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'unique_id': uniqueId,
       'name': name,
       'email': email,
-      'joined_at': joinedAt,
-      'role': role,
       'image': image,
+      'role': role,
+      'join_since': joinSince,
+      'all_orders': allOrders,
     };
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../service/config.dart';
 import './order.dart';
 import '../../common/text_util.dart';
 import '../../provider/cart.dart';
@@ -164,7 +165,12 @@ class _CartScreenState extends State<CartScreen> {
                             );
                           },
                           child: ListTile(
-                            leading: const Icon(Icons.shopping_cart),
+                            leading: Image.network(
+                              '${Config.baseUrl}/assets/${cart.productImage}',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

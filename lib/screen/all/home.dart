@@ -31,20 +31,20 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _customerPages = [
     OrderHistoryScreen(),
     CatalogScreen(),
-    ProfileScreen(role: 'customer'),
+    ProfileScreen(),
   ];
 
   final List<Widget> _adminPages = [
     ProductScreen(),
     UserScreen(),
     // ReportScreen(),
-    ProfileScreen(role: 'admin'),
+    ProfileScreen(),
   ];
 
   final List<Widget> _cashierPages = [
     TransactionHistoryScreen(),
     TransactionScreen(),
-    ProfileScreen(role: 'cashier'),
+    ProfileScreen(),
   ];
 
   @override
