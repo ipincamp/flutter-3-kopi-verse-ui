@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kopi_verse/service/config.dart';
 import 'package:provider/provider.dart';
 
 import '../customer/catalog.dart';
@@ -120,7 +121,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               .toList();
                           final product = filteredProducts[index];
                           return GestureDetector(
-                            onLongPress: () {
+                            onDoubleTap: () {
                               // edit
                               final TextEditingController nameController =
                                   TextEditingController(text: product.name);
@@ -258,7 +259,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   horizontal: 10, vertical: 5),
                               child: ListTile(
                                 leading: GestureDetector(
-                                  onLongPress: () {
+                                  onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -272,7 +273,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   },
                                   child: product.image != 'no-image.jpg'
                                       ? Image.network(
-                                          'http://127.0.0.1:8000/assets/fYsxYhcM9RNfexuruboFkDxhFZ8hisFQN4DCBtEL.png',
+                                          '${Config.baseUrl}/assets/${product.image}',
                                           width: 50,
                                           height: 50,
                                           fit: BoxFit.cover,
@@ -281,8 +282,10 @@ class _ProductScreenState extends State<ProductScreen> {
                                                   const Icon(Icons.broken_image,
                                                       size: 50),
                                         )
-                                      : const Icon(Icons.image_not_supported,
-                                          size: 50),
+                                      : Image.asset('assets/images/p1.png',
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover),
                                 ),
                                 title: Text(product.name),
                                 trailing: IconButton(

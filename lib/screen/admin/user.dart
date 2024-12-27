@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/auth.dart';
+import '../../provider/user.dart';
+import '../../service/config.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -15,17 +16,25 @@ class _UserScreenState extends State<UserScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AuthProvider>(context, listen: false).getUsers();
+      Provider.of<UserProvider>(context, listen: false).getUsers();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<AuthProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Screen'),
+        title: const Text('Users'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              userProvider.getUsers();
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: userProvider.isLoading
           ? const Center(
@@ -38,14 +47,47 @@ class _UserScreenState extends State<UserScreen> {
                     itemCount: userProvider.users.length,
                     itemBuilder: (context, index) {
                       final user = userProvider.users[index];
-                      print(user);
 
                       return ListTile(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) {
+                              return AlertDialog(
+                                title: const Text('Detail User'),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 50,
+                                        backgroundImage: NetworkImage(
+                                          '${Config.baseUrl}/assets/${user.image}',
+                                        ),
+                                      ),
+                                      Text(user.name),
+                                      Text(user.email),
+                                      Text(user.role),
+                                      Text(user.joinSince),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(ctx).pop();
+                                    },
+                                    child: const Text('Oke'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(user.image),
+                          backgroundImage: NetworkImage(
+                              '${Config.baseUrl}/assets/${user.image}'),
                         ),
                         title: Text(user.name),
-                        subtitle: Text(user.email),
                         trailing: user.role == 'cashier'
                             ? const Icon(Icons.trolley)
                             : const Icon(Icons.monetization_on_outlined),

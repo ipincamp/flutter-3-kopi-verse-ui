@@ -17,6 +17,7 @@ dependencies:
   barcode: ^2.2.8
   flutter_svg: ^2.0.16
   file_picker: ^8.1.6
+  http_parser: ^4.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
